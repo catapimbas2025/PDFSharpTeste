@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace PDFSharpTeste.Models
 {
@@ -6,8 +7,10 @@ namespace PDFSharpTeste.Models
     public class Cliente
     {
 
-        [Key]
-        public int Id { get; set; }
+
+
+         [Key]     
+         public int Id { get; set; }
 
         [Required]
         public DateTime DataCadastro { get; set; }

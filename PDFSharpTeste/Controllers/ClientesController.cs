@@ -32,15 +32,15 @@ namespace PDFSharpTeste.Controllers
         }
 
         // GET: Clientes/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string? nome)
         {
-            if (id == null)
+            if (nome == null)
             {
                 return NotFound();
             }
 
             var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Nome == nome);
             if (cliente == null)
             {
                 return NotFound();
@@ -93,9 +93,9 @@ namespace PDFSharpTeste.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,DataCadastro,Nome,CPF,RG,Email,EstadoCivil,DataDeNascimento,Endereco,Numero,Bairro,Cidade,Estado,CEP,Telefone,Telefone2,Referencias,Observacoes")] Models.Cliente cliente)
+        public async Task<IActionResult> Edit(string nome, [Bind("Id,DataCadastro,Nome,CPF,RG,Email,EstadoCivil,DataDeNascimento,Endereco,Numero,Bairro,Cidade,Estado,CEP,Telefone,Telefone2,Referencias,Observacoes")] Models.Cliente cliente)
         {
-            if (id != cliente.Id)
+            if (nome != cliente.Nome)
             {
                 return NotFound();
             }
@@ -109,7 +109,7 @@ namespace PDFSharpTeste.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClienteExists(cliente.Id))
+                    if (!ClienteExists(cliente.Nome))
                     {
                         return NotFound();
                     }
@@ -124,15 +124,32 @@ namespace PDFSharpTeste.Controllers
         }
 
         // GET: Clientes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var cliente = await _context.Clientes
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (cliente == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(cliente);
+        //}
+
+        public async Task<IActionResult> Delete(String nome)
         {
-            if (id == null)
+            if (nome == null)
             {
                 return NotFound();
             }
 
             var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Nome == nome);
             if (cliente == null)
             {
                 return NotFound();
@@ -156,9 +173,14 @@ namespace PDFSharpTeste.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ClienteExists(int id)
+        //private bool ClienteExists(int id)
+        //{
+        //    return _context.Clientes.Any(e => e.Id == id);
+        //}
+
+        private bool ClienteExists(String nome)
         {
-            return _context.Clientes.Any(e => e.Id == id);
+            return _context.Clientes.Any(e => e.Nome == nome);
         }
 
         public FileResult GerarRelatorioCliente()
@@ -186,17 +208,17 @@ namespace PDFSharpTeste.Controllers
                 var fonteDetalhesDescricao = new PdfSharpCore.Drawing.XFont("Arial", 7);
 
                 //ADICIONANDO A LOGO NO DOCUMENTO
-                var logo = @"C:\Users\schua\source\repos\PDFSharpTeste\PDFSharpTeste\wwwroot\imagens\senaccharp.png";
+                var logo = @"C:\Repositorio\PDFSharpTeste\PDFSharpTeste\wwwroot\imagens\senaccharp.png";
                 XImage imagem = XImage.FromFile(logo);
                 graphics.DrawImage(imagem, 20, 5, 300, 50);
 
 
                 var tituloDetalhes = new PdfSharpCore.Drawing.Layout.XTextFormatter(graphics);
                 tituloDetalhes.Alignment = PdfSharpCore.Drawing.Layout.XParagraphAlignment.Center;
-                tituloDetalhes.DrawString ("Relatório dos Clientes", tituloDetalhes, corFonte, new PdfSharpCore.Drawing.XRect(0, 120, page.Width, page.Height));
+                tituloDetalhes.DrawString ("Relatório dos Clientes", titulodetalhes, corFonte, new PdfSharpCore.Drawing.XRect(0, 120, page.Width, page.Height));
 
 
-
+                // ID TEM QUE SER VERIFICADO
                 textFormatter.DrawString("Id:", fonteDescricao, corFonte, new XRect(20, 75, page.Width, page.Height));
                 textFormatter.DrawString(Clientes.Id.ToString(), fonteOrganizacao, corFonte, new XRect(80, 75, page.Width, page.Height));
 
@@ -240,11 +262,11 @@ namespace PDFSharpTeste.Controllers
 
                 textFormatter.DrawString("Observacoes:", fonteDescricao, corFonte, new XRect(20, 355, page.Width, page.Height));
                 textFormatter.DrawString(Clientes.Observacoes, fonteOrganizacao, corFonte, new XRect(80, 355, page.Width, page.Height));
-
+              
 
                 var qtdPaginas = doc.PageCount; //CONTADOR DE PÁGINAS DO DOCUMENTO
                 textFormatter.DrawString(qtdPaginas.ToString(), new PdfSharpCore.Drawing.XFont("Arial", 10), corFonte, new PdfSharpCore.Drawing.XRect(535, 825, page.Width, page.Height));
-
+             
 
                 // ADICIONADO NOME AO DOCUMENTO
                 using (MemoryStream stream = new MemoryStream())
